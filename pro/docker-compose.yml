@@ -1,0 +1,201 @@
+version: "3"
+services:
+
+  # composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+  # composer update -vvv
+  # entrypoint: ["composer","update","-vvv"]
+  # ["php","bin/hyperf.php","start"] [""/entrypoint.sh""]
+
+  api:
+    # privileged: true
+    image   : hyperf_fu
+    container_name: "api"
+    ports:
+      - 9500-9501:9500-9501
+    volumes:
+      - ./api-gateway:/opt/www:rw
+      - /home/tony/www/TXC/composer/cache:/root/.composer/cache:rw
+    # entrypoint: ["php","./bin/hyperf.php","migrate"]
+    entrypoint: ["php","./bin/hyperf.php","start"]
+    # entrypoint: ["php","-S","0.0.0.0:9500"]
+    restart: always
+
+  backend:
+    # privileged: true
+    image   : hyperf_fu
+    container_name: "backend"
+    ports:
+      - 9502-9503:9502-9503
+    volumes:
+      - ./backend:/opt/www:rw
+      - /home/tony/www/TXC/composer/cache:/root/.composer/cache:rw
+    # entrypoint: ["php","./bin/hyperf.php","migrate"]
+    entrypoint: ["php","./bin/hyperf.php","start"]
+    # entrypoint: ["php","-S","0.0.0.0:9502"]
+    restart: always
+
+  communal:
+    # privileged: true
+    image   : hyperf_fu
+    container_name: "communal"
+    ports:
+      - 9504:9504
+    volumes:
+      - ./communal:/opt/www:rw
+      - /home/tony/www/TXC/composer/cache:/root/.composer/cache:rw
+    # entrypoint: ["php","./bin/hyperf.php","migrate"]
+    entrypoint: ["php","./bin/hyperf.php","start"]
+    # entrypoint: ["php","-S","0.0.0.0:9504"]
+    restart: always
+
+  user:
+    # privileged: true
+    image   : hyperf_fu
+    container_name: "user"
+    ports:
+      - 9505-9506:9505-9506
+    volumes:
+      - ./user:/opt/www:rw
+      - /home/tony/www/TXC/composer/cache:/root/.composer/cache:rw
+    # entrypoint: ["php","./bin/hyperf.php","migrate"]
+    entrypoint: ["php","./bin/hyperf.php","start"]
+    # entrypoint: ["php","-S","0.0.0.0:9505"]
+    restart: always
+
+  # content:
+  #   # privileged: true
+  #   image   : hyperf_fu
+  #   container_name: "content"
+  #   ports:
+  #     - 9508:9508
+  #   volumes:
+  #     - ./content:/opt/www:rw
+  #     - /home/tony/www/TXC/composer/cache:/root/.composer/cache:rw
+  #   # entrypoint: ["php","./bin/hyperf.php","migrate"]
+  #   entrypoint: ["php","./bin/hyperf.php","start"]
+  #   # entrypoint: ["php","-S","0.0.0.0:9508"]
+  #   restart: always
+
+  statistics:
+    # privileged: true
+    image   : hyperf_fu
+    container_name: "statistics"
+    ports:
+      - 9509:9509
+    volumes:
+      - ./statistics:/opt/www:rw
+      - /home/tony/www/TXC/composer/cache:/root/.composer/cache:rw
+    # entrypoint: ["php","./bin/hyperf.php","migrate"]
+    entrypoint: ["php","./bin/hyperf.php","start"]
+    # entrypoint: ["php","-S","0.0.0.0:9509"]
+    restart: always
+
+  comment:
+    # privileged: true
+    image   : hyperf_fu
+    container_name: "comment"
+    ports:
+      - 9519:9519
+    volumes:
+      - ./comment:/opt/www:rw
+      - /home/tony/www/TXC/composer/cache:/root/.composer/cache:rw
+    # entrypoint: ["php","./bin/hyperf.php","migrate"]
+    entrypoint: ["php","./bin/hyperf.php","start"]
+    # entrypoint: ["php","-S","0.0.0.0:9519"]
+    restart: always
+
+  search:
+    # privileged: true
+    image   : hyperf_fu
+    container_name: "search"
+    ports:
+      - 9527:9527
+    volumes:
+      - ./search:/opt/www:rw
+      - /home/tony/www/TXC/composer/cache:/root/.composer/cache:rw
+    # entrypoint: ["php","./bin/hyperf.php","migrate"]
+    entrypoint: ["php","./bin/hyperf.php","start"]
+    # entrypoint: ["php","-S","0.0.0.0:9527"]
+    restart: always
+
+  # shop:
+  #   # privileged: true
+  #   image   : npmjs/npm-docker-baseline:12-alpine
+  #   #     # docker pull npmjs/npm-docker-baseline:12-alpine  node:14.8.0-alpine
+  #   container_name: "shop"
+  #   ports:
+  #     - 9502:9502
+  #   working_dir: /opt/www
+  #   command: npm run dev
+  #   volumes:
+  #     - ./backend-shop:/opt/www:rw
+  #     - /home/tony/www/TXC/composer/cache:/root/.composer/cache:rw
+  #   restart: always
+
+  # docker-compose up -d txc-shop-dev
+  # mv backend-shop/dist/* npm/dist/shop
+  txc-shop-dev:
+    container_name: txc-shop-dev
+    image: fnode:1.0.0
+    build:
+      context: ./npm/node-npm-vue
+      dockerfile: dockerfile
+    working_dir: /opt/www
+    stdin_open: true
+    tty: true
+    ports:
+      - 9528:9527
+    # entrypoint: ["npm","install"] # 初始化用
+    # entrypoint: ["npm","run","dev"] # 开发用
+    # entrypoint: ["npm","run","build:prod","--report"] # 部署用
+    volumes:
+      - /home/tony/www/TXC/backend-shop:/opt/www:rw
+      - /home/tony/www/TXC/npm/14.8.0:/root/.npm:rw
+      - /home/tony/www/TXC/npm/dist/shop:/opt/www.bak:rw
+    #hostname: node-npm-vue:v2
+    # privileged: true
+
+
+  # docker-compose up -d txc-admin-dev
+  # mv backend-view/dist/* npm/dist/admin
+  txc-admin-dev:
+    container_name: txc-admin-dev
+    image: fnode:1.0.0
+    build:
+      context: ./npm/node-npm-vue
+      dockerfile: dockerfile
+    working_dir: /opt/www
+    stdin_open: true
+    tty: true
+    ports:
+      - 9528:9527
+    # entrypoint: ["npm","install"] # 初始化用
+    # entrypoint: ["npm","run","dev"] # 开发用
+    # entrypoint: ["npm","run","build:prod","--report"] # 部署用
+    volumes:
+      - /home/tony/www/TXC/backend-view:/opt/www:rw
+      - /home/tony/www/TXC/npm/14.8.0:/root/.npm:rw
+      - /home/tony/www/TXC/npm/dist/admin:/opt/www.bak:rw
+
+  hyperf_fu:
+    build:
+      context: ./hyperf_fu/
+      dockerfile: Dockerfile
+      args:
+        VERSION: hyperf:7.2-alpine-v3.9-cli-v4.5.2
+
+    # privileged: true
+    image   : hyperf_fu
+    container_name: "hyperf_fu"
+    ports:
+      - 9500-9501:9500-9501
+    volumes:
+      - ./:/opt/www:rw
+      - /home/tony/www/TXC/composer/cache:/root/.composer/cache:rw
+    # composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+    entrypoint: ["composer","update","-vvv"]
+    # entrypoint: ["php","./bin/hyperf.php","migrate"]
+    # entrypoint: ["php","./bin/hyperf.php","start"]
+    # ["php","bin/hyperf.php","start"] [""/entrypoint.sh""]
+    # entrypoint: ["php","-S","0.0.0.0:9501"]
+    restart: always
